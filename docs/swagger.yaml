@@ -1,0 +1,450 @@
+basePath: /api/v1
+definitions:
+  model.AddRole:
+    properties:
+      role_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  model.Book:
+    properties:
+      annotation:
+        type: string
+      author:
+        type: string
+      chapters:
+        type: integer
+      created_at:
+        type: integer
+      filepath:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      pages:
+        type: integer
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  model.Creditionals:
+    properties:
+      email:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  model.Response:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  model.Role:
+    properties:
+      id:
+        type: integer
+      role_name:
+        type: string
+    type: object
+  model.UploadBookCommand:
+    properties:
+      url:
+        type: string
+    type: object
+  model.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      login:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/model.Role'
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server celler server.
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Book API
+  version: "1.0"
+paths:
+  /admin/addRole:
+    post:
+      consumes:
+      - application/json
+      operationId: addRole
+      parameters:
+      - description: Creditionals's credentials
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.AddRole'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: add role
+  /admin/role/list:
+    get:
+      consumes:
+      - application/json
+      operationId: getRole
+      parameters:
+      - description: Role id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Data
+          schema:
+            $ref: '#/definitions/model.Role'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: get roles
+  /admin/user/delete:
+    delete:
+      consumes:
+      - application/json
+      operationId: deleteUser
+      parameters:
+      - description: User id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: delete user
+  /admin/user/list:
+    get:
+      consumes:
+      - application/json
+      operationId: getUser
+      parameters:
+      - description: User id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Data
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: get users
+  /book/delete:
+    delete:
+      consumes:
+      - application/json
+      operationId: deleteBook
+      parameters:
+      - description: Book id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: delete book
+  /book/list:
+    get:
+      consumes:
+      - application/json
+      operationId: getBook
+      parameters:
+      - description: Book id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Data
+          schema:
+            $ref: '#/definitions/model.Book'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: get books
+  /book/read:
+    get:
+      consumes:
+      - application/json
+      operationId: getBookPage
+      parameters:
+      - description: Book id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: get book page
+  /book/upload:
+    post:
+      consumes:
+      - application/json
+      operationId: uploadBook
+      parameters:
+      - description: User credentials
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.UploadBookCommand'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: upload book
+  /login:
+    post:
+      consumes:
+      - application/json
+      operationId: login
+      parameters:
+      - description: Creditionals's credentials
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.Creditionals'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: login
+  /logout:
+    post:
+      consumes:
+      - application/json
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: logout
+  /profile:
+    get:
+      consumes:
+      - application/json
+      operationId: profile
+      responses:
+        "200":
+          description: Data
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: profile
+  /refresh:
+    get:
+      consumes:
+      - application/json
+      operationId: refresh
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: refresh
+  /registration:
+    post:
+      consumes:
+      - application/json
+      operationId: createUser
+      parameters:
+      - description: Creditionals's credentials
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.Creditionals'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: create user
+swagger: "2.0"

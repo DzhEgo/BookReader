@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Книжный сервис</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<header>
+  <div class="container header-content">
+    <div class="logo">Книжный сервис</div>
+    <div class="auth-buttons">
+      <button id="loginBtn" class="login-btn">Войти</button>
+      <button id="registerBtn" class="register-btn">Регистрация</button>
+      <button id="profileBtn" class="profile-btn hidden">Профиль</button>
+      <button id="logoutBtn" class="logout-btn hidden">Выйти</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div id="bookListSection">
+    <h2>Доступные книги</h2>
+    <div class="book-list" id="bookList"></div>
+  </div>
+
+  <div id="readerSection" class="hidden">
+    <div class="reader-container">
+      <div class="reader-header">
+        <div class="reader-settings">
+          <select id="fontFamily" class="setting-select">
+            <option value="'Roboto', sans-serif">Roboto</option>
+            <option value="'Open Sans', sans-serif">Open Sans</option>
+            <option value="'PT Serif', serif">PT Serif</option>
+          </select>
+          <select id="fontSize" class="setting-select">
+            <option value="14px">Маленький</option>
+            <option value="16px" selected>Средний</option>
+            <option value="18px">Большой</option>
+            <option value="20px">Очень большой</option>
+          </select>
+        </div>
+        <h2 class="reader-title" id="bookTitle"></h2>
+        <button id="closeReaderBtn" class="control-btn close-btn" title="Закрыть">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="reader-content" id="readerContent"></div>
+      <div class="reader-footer">
+        <div class="page-info" id="pageInfo"></div>
+        <div class="page-nav">
+          <button id="prevPageBtn" class="control-btn nav-btn" title="Предыдущая страница">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button id="nextPageBtn" class="control-btn nav-btn" title="Следующая страница">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="uploadSection" class="hidden">
+    <div class="upload-form">
+      <h2>Загрузить книгу</h2>
+      <form id="uploadForm">
+        <div class="form-group">
+          <label for="bookFile">Файл книги</label>
+          <input type="file" id="bookFile" class="form-control" accept=".fb2,.epub" required>
+        </div>
+        <div class="form-group">
+          <label for="bookUrl">Или URL книги</label>
+          <input type="url" id="bookUrl" class="form-control">
+        </div>
+        <button type="submit" class="submit-btn">Загрузить</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="adminSection" class="hidden">
+    <div class="admin-panel">
+      <h2 class="admin-title">Панель администратора</h2>
+
+      <h3>Пользователи</h3>
+      <table class="user-list" id="userList">
+        <thead>
+        <tr>
+          <th>Логин</th>
+          <th>Роль</th>
+          <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Роли</h3>
+      <table class="role-list" id="roleList">
+        <thead>
+        <tr>
+          <th>Название</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeLoginModal">&times;</span>
+    <h3 class="modal-title">Вход</h3>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginUsername">Логин</label>
+        <input type="text" id="loginUsername" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Пароль</label>
+        <input type="password" id="loginPassword" class="form-control" required>
+      </div>
+      <button type="submit" class="submit-btn">Войти</button>
+    </form>
+  </div>
+</div>
+
+<div id="registerModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeRegisterModal">&times;</span>
+    <h3 class="modal-title">Регистрация</h3>
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="registerLogin">Логин</label>
+        <input type="text" id="registerLogin" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="registerEmail">Email</label>
+        <input type="email" id="registerEmail" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="registerPassword">Пароль</label>
+        <input type="password" id="registerPassword" class="form-control" required>
+      </div>
+      <button type="submit" class="submit-btn">Зарегистрироваться</button>
+    </form>
+  </div>
+</div>
+
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeProfileModal">&times;</span>
+    <h3 class="modal-title">Профиль</h3>
+    <div id="profileInfo"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
