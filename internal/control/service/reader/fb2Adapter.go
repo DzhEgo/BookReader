@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
 )
 
 type Fb2ReaderAdapter struct{}
@@ -136,18 +137,38 @@ func (t *Fb2ReaderAdapter) GetBookInfo(path string) (*model.BookInfo, error) {
 
 func (t *Fb2ReaderAdapter) GetBookPage(data string, pageNum uint) (string, error) {
 	runes := []rune(data)
-	totalPages := CountPages(runes)
+	length := uint(len(runes))
+	var start uint
+	var end uint
 
-	if pageNum < 1 || pageNum >= totalPages {
-		return "", fmt.Errorf("page number out of range: %d", pageNum)
+	if length == 0 {
+		return "", nil
 	}
 
-	start := (pageNum - 1) * PageSize
-	end := start + PageSize
-
-	if end > uint(len(runes)) {
-		end = uint(len(runes))
+	for i := uint(1); i < pageNum; i++ {
+		tmpEnd := start + PageSize
+		if tmpEnd >= length {
+			tmpEnd = length
+		} else {
+			for tmpEnd < length && !unicode.IsSpace(runes[tmpEnd]) {
+				tmpEnd++
+			}
+		}
+		start = tmpEnd
 	}
 
-	return string(runes[start:end]), nil
+	end = start + PageSize
+	if end >= length {
+		end = length
+	} else {
+		for end < length && !unicode.IsSpace(runes[end]) {
+			end++
+		}
+	}
+
+	if start >= length {
+		return "", fmt.Errorf("start out of bounds")
+	}
+
+	return strings.TrimSpace(string(runes[start:end])), nil
 }

@@ -99,9 +99,7 @@ func (ah *ApiHandler) getUser(ctx *fiber.Ctx, cred model.Creditionals) (*dbmodel
 
 	user, err := ah.srv.Auth.GetUser(login)
 	if err != nil {
-		log.Errorf("failed to get user: %v", err)
-		wrapErr := fmt.Errorf("failed to get user: %v", err)
-		return nil, utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
+		return nil, fmt.Errorf("failed to get user: %v", err)
 	}
 
 	return user, nil

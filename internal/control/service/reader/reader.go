@@ -4,9 +4,9 @@ import (
 	"BookStore/internal/control/model"
 	"BookStore/internal/control/service/cache"
 	"fmt"
-	"math"
 	"path/filepath"
 	"strings"
+	"unicode"
 )
 
 const PageSize uint = 1500
@@ -130,5 +130,21 @@ func CountPages(runes []rune) uint {
 		return 0
 	}
 
-	return uint(math.Ceil(float64(len(runes)) / float64(PageSize)))
+	var count uint
+	var pos uint
+
+	for pos < uint(len(runes)) {
+		end := pos + PageSize
+		if end > uint(len(runes)) {
+			end = uint(len(runes))
+		} else {
+			for end < uint(len(runes)) && !unicode.IsSpace(runes[end]) {
+				end++
+			}
+		}
+		pos = end
+		count++
+	}
+
+	return count
 }
