@@ -11,14 +11,22 @@ import (
 	"BookStore/internal/control/service/reader"
 	"BookStore/internal/control/service/users"
 	"BookStore/internal/database"
+	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/joho/godotenv"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type app struct {
+	ctx      context.Context
+	cancel   context.CancelFunc
+	stopChan chan struct{}
+
 	fApp *fiber.App
 	api  *api.ApiHandler
 	srv  service.Services
@@ -32,8 +40,13 @@ type app struct {
 // @host		localhost:8080
 // @BasePath	/api/v1
 func Run(cfg *config.BaseConfig) (err error) {
+
+	ctx, cancel := context.WithCancel(context.Background())
 	a := &app{
-		fApp: newFiberApp(cfg),
+		ctx:      ctx,
+		cancel:   cancel,
+		fApp:     newFiberApp(cfg),
+		stopChan: make(chan struct{}),
 	}
 
 	if err = godotenv.Load(); err != nil {
@@ -58,9 +71,46 @@ func Run(cfg *config.BaseConfig) (err error) {
 		return c.SendFile("./front/index.html")
 	})
 
-	log.Info("app started")
+	a.catchStop()
+	return a.run()
+}
 
-	return a.fApp.Listen(":8080")
+func (a *app) catchStop() {
+	go func() {
+		exitChan := make(chan os.Signal, 10)
+		signal.Notify(exitChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+		select {
+		case sig := <-exitChan:
+			log.Info(fmt.Sprintf("%s caught interrupt, stopping...", sig.String()))
+			a.stop()
+		case <-a.ctx.Done():
+			return
+		}
+	}()
+}
+
+func (a *app) stop() {
+	a.cancel()
+	a.stopChan <- struct{}{}
+}
+
+func (a *app) run() error {
+	a.listen()
+	log.Info("application is running")
+
+	<-a.stopChan
+	log.Info("exit")
+	return nil
+}
+
+func (a *app) listen() {
+	go func() {
+		if err := a.fApp.Listen(":8080"); err != nil {
+			log.Error("API server error")
+			a.stop()
+		}
+	}()
 }
 
 func newFiberApp(cfg *config.BaseConfig) *fiber.App {
