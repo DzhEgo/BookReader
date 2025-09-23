@@ -4,7 +4,9 @@ import (
 	"BookStore/internal/common/config"
 	"BookStore/internal/common/utils"
 	"BookStore/internal/control/service"
+	"crypto/rand"
 	"errors"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 )
@@ -33,6 +35,14 @@ func NewApiHandler(
 
 	for _, opt := range opts {
 		opt(ah)
+	}
+
+	n, err := rand.Read(ah.secret[:])
+	if err != nil {
+		return nil, fmt.Errorf("secret key: %w", err)
+	}
+	if n != len(ah.secret) {
+		return nil, errors.New("partially empty secret key")
 	}
 
 	b := ah.router.Group("/book")
