@@ -92,6 +92,7 @@ func (a *app) catchStop() {
 
 func (a *app) stop() {
 	a.cancel()
+	a.srv.Cache.Clean()
 	a.stopChan <- struct{}{}
 }
 
@@ -129,11 +130,14 @@ func (a *app) initServices() (err error) {
 	var srv service.Services
 	srv.Auth = auth.NewService()
 	srv.User = users.NewService()
-	cacheService := cache.NewService()
-	srv.Cache = cacheService
-	readerService := reader.NewService(cacheService)
-	srv.Reader = readerService
-	srv.Books = books.NewService(readerService, cacheService)
+	srv.Cache = cache.NewService()
+	srv.Reader = reader.NewService(
+		reader.WithCache(srv.Cache),
+	)
+	srv.Books = books.NewService(
+		books.WithCache(srv.Cache),
+		books.WithReader(srv.Reader),
+	)
 
 	a.srv = srv
 	return err

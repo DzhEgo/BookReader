@@ -9,6 +9,7 @@ type MemoryCacheService interface {
 	Get(key string) (any, bool)
 	Set(key string, value any)
 	Delete(key string)
+	Clean()
 }
 
 type item struct {
@@ -63,6 +64,12 @@ func (mc *memoryCache) Delete(key string) {
 	mc.mu.Lock()
 	defer mc.mu.Unlock()
 	delete(mc.data, key)
+}
+
+func (mc *memoryCache) Clean() {
+	mc.mu.Lock()
+	defer mc.mu.Unlock()
+	mc.data = make(map[string]item)
 }
 
 func (mc *memoryCache) cleanup() {

@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = window.location.origin + '/api/v1';
 const API = {
     BOOK_LIST: `${API_BASE}/book/list`,
     BOOK_READ: `${API_BASE}/book/read`,
@@ -50,7 +50,8 @@ const elements = {
     userList: document.querySelector('#userList tbody'),
     roleList: document.querySelector('#roleList tbody'),
     fontFamily: document.getElementById('fontFamily'),
-    fontSize: document.getElementById('fontSize')
+    fontSize: document.getElementById('fontSize'),
+    themeSelector: document.getElementById('themeSelector'),
 };
 
 let state = {
@@ -63,15 +64,18 @@ let state = {
     roles: [],
     readerSettings: {
         fontFamily: "'Roboto', sans-serif",
-        fontSize: "16px"
+        fontSize: "16px",
+        theme: "light"
     }
 };
 
 function init() {
     loadUserFromStorage();
+    loadReaderTheme();
     setupEventListeners();
     fetchBooks();
     applyReaderSettings();
+    applyReaderTheme();
 
     if (state.currentUser) {
         updateUIForUser();
@@ -138,6 +142,9 @@ function setupEventListeners() {
 
     elements.fontFamily.addEventListener('change', updateReaderSettings);
     elements.fontSize.addEventListener('change', updateReaderSettings);
+    if (elements.themeSelector) {
+        elements.themeSelector.addEventListener('change', updateReaderSettings);
+    }
 
     window.addEventListener('click', (e) => {
         if (e.target === elements.loginModal) elements.loginModal.style.display = 'none';
@@ -776,7 +783,14 @@ async function deleteItem(itemType, itemId) {
 function updateReaderSettings() {
     state.readerSettings.fontFamily = elements.fontFamily.value;
     state.readerSettings.fontSize = elements.fontSize.value;
+    if (elements.themeSelector) {
+        state.readerSettings.theme = elements.themeSelector.value;
+    }
+
     applyReaderSettings();
+    applyReaderTheme();
+    
+    localStorage.setItem('readerSettings', JSON.stringify(state.readerSettings));
 }
 
 function applyReaderSettings() {
@@ -785,6 +799,34 @@ function applyReaderSettings() {
 
     elements.fontFamily.value = state.readerSettings.fontFamily;
     elements.fontSize.value = state.readerSettings.fontSize;
+
+    if (elements.themeSelector) {
+        elements.themeSelector.value = state.readerSettings.theme;
+    }
+}
+
+function applyReaderTheme() {
+    const readerContainer = document.querySelector('.reader-container');
+    if (!readerContainer) return;
+
+    readerContainer.classList.remove('reader-theme-light', 'reader-theme-dark', 'reader-theme-sepia', 'reader-theme-night');
+
+    readerContainer.classList.add(`reader-theme-${state.readerSettings.theme}`);
+
+    localStorage.setItem('readerTheme', state.readerSettings.theme);
+}
+
+function loadReaderTheme() {
+    const saved = localStorage.getItem('readerSettings');
+    if (saved) {
+        const settings = JSON.parse(saved);
+        state.readerSettings = {
+            ...state.readerSettings,
+            ...settings
+        };
+    }
+
+    applyReaderTheme();
 }
 
 init();

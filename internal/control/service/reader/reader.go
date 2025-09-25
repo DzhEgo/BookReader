@@ -16,13 +16,26 @@ type ReaderService struct {
 	cache    cache.MemoryCacheService
 }
 
-func NewService(cache cache.MemoryCacheService) *ReaderService {
-	return &ReaderService{
+type Option func(*ReaderService)
+
+func NewService(opts ...Option) *ReaderService {
+	s := &ReaderService{
 		adapters: map[string]BookReader{
 			"fb2":  &Fb2ReaderAdapter{},
 			"epub": &EpubReaderAdapter{},
 		},
-		cache: cache,
+	}
+
+	for _, opt := range opts {
+		opt(s)
+	}
+
+	return s
+}
+
+func WithCache(cache cache.MemoryCacheService) Option {
+	return func(r *ReaderService) {
+		r.cache = cache
 	}
 }
 

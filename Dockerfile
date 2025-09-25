@@ -1,16 +1,22 @@
-FROM golang:1.23-alpine
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache git
+COPY go.mod go.sum ./
 
-COPY go.mod ./
-COPY go.sum ./
 RUN go mod download
 
 COPY . .
 
 RUN go build -o bookreader ./cmd
+
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/bookreader .
+
+COPY --from=builder /app/front ./front
 
 EXPOSE 8080
 

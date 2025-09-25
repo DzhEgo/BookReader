@@ -31,15 +31,24 @@ type bookService struct {
 	cache  cache.MemoryCacheService
 }
 
-func NewService(reader reader.BookReader, cache cache.MemoryCacheService, opts ...Option) BookService {
-	s := bookService{
-		reader: reader,
-		cache:  cache,
-	}
+func NewService(opts ...Option) BookService {
+	s := bookService{}
 	for _, opt := range opts {
 		opt(&s)
 	}
 	return &s
+}
+
+func WithReader(r reader.BookReader) Option {
+	return func(s *bookService) {
+		s.reader = r
+	}
+}
+
+func WithCache(c cache.MemoryCacheService) Option {
+	return func(s *bookService) {
+		s.cache = c
+	}
 }
 
 func (b *bookService) UploadBookLocal(ctx *fiber.Ctx, file *multipart.FileHeader, user *model.UserContext) error {

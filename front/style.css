@@ -140,6 +140,8 @@ header {
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
+    color: #444;
+    transition: background-color 0.3s ease, color 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     min-height: 90vh;
@@ -493,4 +495,101 @@ p {
 
 .update-role-btn {
     margin-left: 5px;
+}
+
+.reader-container.reader-theme-light {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.reader-container.reader-theme-dark {
+    background-color: #121212;
+    color: #eeeeee;
+}
+
+.reader-container.reader-theme-sepia {
+    background-color: #f4f1ea;
+    color: #5c4b37;
+}
+
+.reader-container.reader-theme-dark .reader-header {
+    border-bottom-color: #555;
+}
+
+.reader-container.reader-theme-dark .reader-footer{
+    background-color: rgba(30, 30, 30, 0.95);
+}
+
+.reader-container.reader-theme-dark .control-btn {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+}
+.reader-container.reader-theme-dark .control-btn:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.reader-container.reader-theme-dark #closeReaderBtn {
+    background-color: rgba(255, 77, 79, 0.3);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+.reader-container.reader-theme-dark #closeReaderBtn:hover {
+    background-color: rgba(255, 77, 79, 0.5);
+}
+
+.reader-container.reader-theme-dark .setting-select,
+.reader-container.reader-theme-dark .theme-select{
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+}
+.reader-container.reader-theme-dark .setting-select:focus,
+.reader-container.reader-theme-dark .theme-select:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 6px rgba(255,255,255,0.8);
+}
+
+.theme-selector select:focus {
+    outline: none;
+}
+
+.reader-container.reader-theme-dark .reader-title {
+    color: #ffffff;
+}
+
+.reader-container.reader-theme-dark a {
+    color: #66c0f4;
+}
+.reader-container.reader-theme-dark a:hover{
+    color: #a3d9ff;
+}
+
+.reader-container.reader-theme-light .reader-content {
+    color: #333333;
+}
+
+.reader-container.reader-theme-dark .reader-content {
+    color: #eeeeee;
+}
+
+.reader-container.reader-theme-sepia .reader-content {
+    color: #5c4b37;
+}
+
+.reader-container.reader-theme-dark .reader-content p {
+    color: inherit;
+}
+
+.reader-container.reader-theme-sepia .reader-content p {
+    color: inherit;
+}
+
+.setting-label {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 12px;
+    margin-right: 4px;
+    font-size: 14px;
+    color: inherit;
 }
