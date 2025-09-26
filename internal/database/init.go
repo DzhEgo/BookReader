@@ -34,7 +34,7 @@ func GetDB() *gorm.DB {
 }
 
 func migrate() {
-	if err := db.AutoMigrate(&model.Book{}, &model.User{}, &model.Role{}); err != nil {
+	if err := db.AutoMigrate(&model.Book{}, &model.User{}, &model.Role{}, &model.ReadingProgress{}); err != nil {
 		log.Fatalf("migration failed: %v", err)
 	}
 	initRoles()

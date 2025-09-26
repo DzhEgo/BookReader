@@ -6,8 +6,10 @@ import (
 	"BookStore/internal/control/service/reader"
 	dbmodel "BookStore/internal/database/model"
 	"BookStore/internal/database/table"
+	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -23,6 +25,8 @@ type BookService interface {
 	GetBook(id int) (*dbmodel.Book, error)
 	GetBooks() ([]*dbmodel.Book, error)
 	DeleteBook(id int, user *model.UserContext) error
+	SaveProgress(command *model.SaveProgress) error
+	GetProgress(userId, bookId int) (*dbmodel.ReadingProgress, error)
 }
 type Option func(*bookService)
 
@@ -249,4 +253,28 @@ func (b *bookService) DeleteBook(id int, user *model.UserContext) (err error) {
 	b.cache.Delete("allBooks")
 
 	return nil
+}
+
+func (b *bookService) SaveProgress(command *model.SaveProgress) error {
+	existProgress, err := table.GetProgress(command.GetUserId(), command.BookId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		progress := &dbmodel.ReadingProgress{
+			UserID:      command.GetUserId(),
+			BookID:      command.BookId,
+			CurrentPage: command.Page,
+			LastReadAt:  time.Now().Unix(),
+		}
+
+		return table.Upsert(progress)
+	}
+
+	if existProgress != nil {
+		return table.UpdateProgress(existProgress, command.Page)
+	}
+
+	return nil
+}
+
+func (b *bookService) GetProgress(userId, bookId int) (*dbmodel.ReadingProgress, error) {
+	return table.GetProgress(userId, bookId)
 }

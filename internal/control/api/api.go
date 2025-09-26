@@ -78,6 +78,8 @@ func NewApiHandler(
 	b.Post("/upload", ah.uploadBook)
 	b.Delete("/delete", ah.deleteBook)
 	b.Get("/read", ah.getBookPage)
+	b.Post("/progress/set", ah.saveProgress)
+	b.Get("/progress/get", ah.getProgress)
 
 	return ah, nil
 }

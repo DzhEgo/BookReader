@@ -3,6 +3,7 @@ package table
 import (
 	"BookStore/internal/database"
 	"BookStore/internal/database/model"
+	"time"
 )
 
 func Upsert(model interface{}) error {
@@ -112,4 +113,21 @@ func DeleteUser(id int) error {
 	}
 
 	return nil
+}
+
+func GetProgress(userId, bookId int) (*model.ReadingProgress, error) {
+	var progress *model.ReadingProgress
+	err := database.GetDB().Model(&model.ReadingProgress{}).Where("user_id = ? and book_id = ?", userId, bookId).Preload("Book").First(&progress).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return progress, err
+}
+
+func UpdateProgress(progress *model.ReadingProgress, page int) error {
+	return database.GetDB().Model(&progress).Updates(map[string]interface{}{
+		"current_page": page,
+		"last_read_at": time.Now().Unix(),
+	}).Error
 }

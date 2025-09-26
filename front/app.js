@@ -4,6 +4,8 @@ const API = {
     BOOK_READ: `${API_BASE}/book/read`,
     BOOK_UPLOAD: `${API_BASE}/book/upload`,
     BOOK_DELETE: `${API_BASE}/book/delete`,
+    BOOK_PROGRESS_GET: `${API_BASE}/book/progress/get`,
+    BOOK_PROGRESS_SAVE: `${API_BASE}/book/progress/set`,
     REGISTER: `${API_BASE}/registration`,
     LOGIN: `${API_BASE}/login`,
     LOGOUT: `${API_BASE}/logout`,
@@ -126,16 +128,18 @@ function setupEventListeners() {
         toggleReaderMode(false)
     });
 
-    elements.prevPageBtn.addEventListener('click', () => {
+    elements.prevPageBtn.addEventListener('click', async () => {
         if (state.currentPage > 1) {
             state.currentPage--;
+            await saveBookProgress(state.currentBook.id, state.currentPage);
             loadBookPage();
         }
     });
 
-    elements.nextPageBtn.addEventListener('click', () => {
+    elements.nextPageBtn.addEventListener('click', async () => {
         if (state.currentPage < state.totalPages) {
             state.currentPage++;
+            await saveBookProgress(state.currentBook.id, state.currentPage);
             loadBookPage();
         }
     });
@@ -251,6 +255,48 @@ function renderBooks() {
     });
 }
 
+async function loadBookProgress(bookId) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return 1;
+
+        const response = await fetch(`${API.BOOK_PROGRESS_GET}?id=${bookId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.current_page || 1;
+        }
+    } catch (error) {
+        console.error('Error loading progress:', error);
+    }
+    return 1;
+}
+
+async function saveBookProgress(bookId, page) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        await fetch(API.BOOK_PROGRESS_SAVE, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                book_id: bookId,
+                page: page
+            })
+        });
+    } catch (error) {
+        console.error('Error saving progress:', error);
+    }
+}
+
 async function openBook(bookId) {
     if (!state.currentUser) {
         alert('Для чтения книг необходимо авторизоваться');
@@ -270,6 +316,8 @@ async function openBook(bookId) {
 
     state.currentBook = book;
     state.currentPage = 1;
+
+    state.currentPage = await loadBookProgress(bookId);
 
     if (state.currentUser) {
         if (state.currentUser.role_name === 'user') {
@@ -789,7 +837,7 @@ function updateReaderSettings() {
 
     applyReaderSettings();
     applyReaderTheme();
-    
+
     localStorage.setItem('readerSettings', JSON.stringify(state.readerSettings));
 }
 

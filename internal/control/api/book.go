@@ -14,7 +14,7 @@ import (
 // @Summary	upload book
 // @ID			uploadBook
 // @Accept		json
-// @Param		params	body		model.UploadBookCommand	true	"User credentials"	request
+// @Param		params	body		model.UploadBookCommand	true	"Upload command"	request
 // @Failure	500		{object}	model.Response			"Internal Server Error"
 // @Failure	400		{object}	model.Response			"Bad Request"
 // @Failure	401		{object}	model.Response			"Unauthorized"
@@ -221,4 +221,87 @@ func (ah *ApiHandler) getBookPage(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(bookPage)
+}
+
+// @Summary	get book progress
+// @ID			saveProgress
+// @Accept		json
+// @Param		params	body		model.UploadBookCommand	true	"Save progress command"	request
+// @Failure	500		{object}	model.Response	"Internal Server Error"
+// @Failure	400		{object}	model.Response	"Bad Request"
+// @Failure	401		{object}	model.Response	"Unauthorized"
+// @Success	200		{object}	model.Response			"OK"
+// @Router		/book/progress/set [post]
+func (ah *ApiHandler) saveProgress(ctx *fiber.Ctx) error {
+	var command *model.SaveProgress
+
+	if err := ctx.BodyParser(&command); err != nil {
+		log.Errorf("failed to parse request body: %v", err)
+		wrapErr := fmt.Errorf("failed to parse request body: %v", err)
+		return utils.Response(ctx, fiber.StatusBadRequest, wrapErr.Error())
+	}
+
+	user, err := ah.getUserFromContext(ctx)
+	if err != nil {
+		log.Errorf("failed to get user: %v", err)
+		wrapErr := fmt.Errorf("failed to get user: %v", err)
+		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
+	}
+
+	if user == nil {
+		log.Errorf("unauthorized")
+		wrapErr := fmt.Errorf("unauthorized")
+		return utils.Response(ctx, fiber.StatusUnauthorized, wrapErr.Error())
+	}
+	command.SetUserId(user.ID)
+
+	if err := ah.srv.Books.SaveProgress(command); err != nil {
+		log.Errorf("failed to save progress: %v", err)
+		wrapErr := fmt.Errorf("failed to save progress: %v", err)
+		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
+	}
+
+	return utils.Response(ctx, fiber.StatusOK, "OK")
+}
+
+// @Summary	get book progress
+// @ID			getProgress
+// @Accept		json
+// @Param		id		query		int				true	"Book id"		request
+// @Failure	500		{object}	model.Response	"Internal Server Error"
+// @Failure	400		{object}	model.Response	"Bad Request"
+// @Failure	401		{object}	model.Response	"Unauthorized"
+// @Success	200		{object}	model.ReadingProgress			"OK"
+// @Router		/book/progress/get [get]
+func (ah *ApiHandler) getProgress(ctx *fiber.Ctx) error {
+	id := ctx.Query("id")
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		log.Errorf("failed to convert id to int: %v", err)
+		wrapErr := fmt.Errorf("failed to convert id to int: %v", err)
+		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
+	}
+
+	user, err := ah.getUserFromContext(ctx)
+	if err != nil {
+		log.Errorf("failed to get user: %v", err)
+		wrapErr := fmt.Errorf("failed to get user: %v", err)
+		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
+	}
+
+	if user == nil {
+		log.Errorf("unauthorized")
+		wrapErr := fmt.Errorf("unauthorized")
+		return utils.Response(ctx, fiber.StatusUnauthorized, wrapErr.Error())
+	}
+
+	progress, err := ah.srv.Books.GetProgress(user.ID, idInt)
+	if err != nil {
+		log.Errorf("failed to get progress: %v", err)
+		wrapErr := fmt.Errorf("failed to get progress: %v", err)
+		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
+	}
+
+	return ctx.JSON(progress)
 }

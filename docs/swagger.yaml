@@ -39,6 +39,23 @@ definitions:
       password:
         type: string
     type: object
+  model.ReadingProgress:
+    properties:
+      book:
+        $ref: '#/definitions/model.Book'
+      book_id:
+        type: integer
+      current_page:
+        type: integer
+      id:
+        type: integer
+      last_read_at:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
   model.Response:
     properties:
       code:
@@ -254,6 +271,65 @@ paths:
           schema:
             $ref: '#/definitions/model.Response'
       summary: get books
+  /book/progress/get:
+    get:
+      consumes:
+      - application/json
+      operationId: getProgress
+      parameters:
+      - description: Book id
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ReadingProgress'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: get book progress
+  /book/progress/set:
+    post:
+      consumes:
+      - application/json
+      operationId: saveProgress
+      parameters:
+      - description: Save progress command
+        in: body
+        name: params
+        required: true
+        schema:
+          $ref: '#/definitions/model.UploadBookCommand'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: get book progress
   /book/read:
     get:
       consumes:
@@ -294,7 +370,7 @@ paths:
       - application/json
       operationId: uploadBook
       parameters:
-      - description: User credentials
+      - description: Upload command
         in: body
         name: params
         required: true

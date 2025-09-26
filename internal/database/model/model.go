@@ -26,3 +26,12 @@ type Role struct {
 	ID       int    `json:"id" gorm:"primaryKey;AUTO_INCREMENT"`
 	RoleName string `json:"role_name" gorm:"unique"`
 }
+type ReadingProgress struct {
+	ID          int   `json:"id" gorm:"primaryKey;AUTO_INCREMENT"`
+	UserID      int   `json:"user_id" gorm:"not null"`
+	BookID      int   `json:"book_id" gorm:"not null"`
+	CurrentPage int   `json:"current_page" gorm:"default:1"`
+	LastReadAt  int64 `json:"last_read_at"`
+	User        User  `gorm:"foreignKey:UserID" json:"user"`
+	Book        Book  `gorm:"foreignKey:BookID" json:"book"`
+}

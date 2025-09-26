@@ -282,6 +282,96 @@ const docTemplate = `{
                 }
             }
         },
+        "/book/progress/get": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "get book progress",
+                "operationId": "getProgress",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Book id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ReadingProgress"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/book/progress/set": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "get book progress",
+                "operationId": "saveProgress",
+                "parameters": [
+                    {
+                        "description": "Save progress command",
+                        "name": "params",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UploadBookCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/book/read": {
             "get": {
                 "consumes": [
@@ -342,7 +432,7 @@ const docTemplate = `{
                 "operationId": "uploadBook",
                 "parameters": [
                     {
-                        "description": "User credentials",
+                        "description": "Upload command",
                         "name": "params",
                         "in": "body",
                         "required": true,
@@ -635,6 +725,32 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ReadingProgress": {
+            "type": "object",
+            "properties": {
+                "book": {
+                    "$ref": "#/definitions/model.Book"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "current_page": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_read_at": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
