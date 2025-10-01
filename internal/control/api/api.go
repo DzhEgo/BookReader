@@ -70,8 +70,8 @@ func NewApiHandler(
 	ah.router.Get("/profile", ah.profile)
 
 	admin := ah.router.Group("/admin", ah.roleMiddleware("admin"))
-	admin.Post("/addRole", ah.addRole)
 	admin.Get("/user/list", ah.users)
+	admin.Put("/role/set", ah.updateRole)
 	admin.Get("/role/list", ah.roles)
 	admin.Delete("/user/delete", ah.deleteUser)
 

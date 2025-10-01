@@ -13,7 +13,7 @@ const API = {
     USER_LIST: `${API_BASE}/admin/user/list`,
     USER_DELETE: `${API_BASE}/admin/user/delete`,
     ROLE_LIST: `${API_BASE}/admin/role/list`,
-    ADD_ROLE: `${API_BASE}/admin/addRole`
+    ADD_ROLE: `${API_BASE}/admin/role/set`
 };
 
 const elements = {

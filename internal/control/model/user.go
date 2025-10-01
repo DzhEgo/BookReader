@@ -16,7 +16,7 @@ type Token struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type AddRole struct {
+type SetRole struct {
 	UserId int `json:"user_id"`
 	RoleId int `json:"role_id"`
 }

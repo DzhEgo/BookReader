@@ -133,17 +133,17 @@ func (ah *ApiHandler) deleteUser(ctx *fiber.Ctx) error {
 	return nil
 }
 
-// @Summary	add role
-// @ID			addRole
+// @Summary	update role
+// @ID			updateRole
 // @Accept		json
-// @Param		params	body		model.AddRole	true	"Creditionals's credentials"	request
+// @Param		params	body		model.SetRole	true	"Creditionals's credentials"	request
 // @Failure	500		{object}	model.Response	"Internal Server Error"
 // @Failure	400		{object}	model.Response	"Bad Request"
 // @Failure	401		{object}	model.Response	"Unauthorized"
 // @Success	200		{object}	string			"OK"
-// @Router		/admin/addRole [post]
-func (ah *ApiHandler) addRole(ctx *fiber.Ctx) error {
-	var cred model.AddRole
+// @Router		/admin/role/set [put]
+func (ah *ApiHandler) updateRole(ctx *fiber.Ctx) error {
+	var cred model.SetRole
 	if err := ctx.BodyParser(&cred); err != nil {
 		log.Errorf("failed to unmarshal json: %v", err)
 		wrapErr := fmt.Errorf("failed to unmarshal json: %v", err)
@@ -163,7 +163,7 @@ func (ah *ApiHandler) addRole(ctx *fiber.Ctx) error {
 		return utils.Response(ctx, fiber.StatusBadRequest, wrapErr.Error())
 	}
 
-	if err := ah.srv.User.AddRole(cred); err != nil {
+	if err := ah.srv.User.UpdateRole(cred); err != nil {
 		log.Errorf("failed to add role: %v", err)
 		wrapErr := fmt.Errorf("failed to add role: %v", err)
 		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())

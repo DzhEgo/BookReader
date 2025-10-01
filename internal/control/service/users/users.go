@@ -11,7 +11,7 @@ type UserService interface {
 	Users() ([]*dbmodel.User, error)
 	GetUser(id int) (*dbmodel.User, error)
 	DeleteUser(id int) error
-	AddRole(cred model.AddRole) error
+	UpdateRole(cred model.SetRole) error
 	GetRoles() ([]*dbmodel.Role, error)
 	GetRole(id int) (*dbmodel.Role, error)
 }
@@ -28,7 +28,7 @@ func NewService(opts ...Option) UserService {
 	return &s
 }
 
-func (a *userService) AddRole(cred model.AddRole) error {
+func (a *userService) UpdateRole(cred model.SetRole) error {
 	user, err := table.GetUserByID(cred.UserId)
 	if err != nil {
 		return err
