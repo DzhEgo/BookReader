@@ -1,4 +1,4 @@
-const API_BASE = window.location.origin + '/api/v1';
+const API_BASE = window.location.origin;
 const API = {
     BOOK_LIST: `${API_BASE}/book/list`,
     BOOK_READ: `${API_BASE}/book/read`,

@@ -16,8 +16,6 @@ WORKDIR /app
 
 COPY --from=builder /app/bookreader .
 
-COPY --from=builder /app/front ./front
-
 EXPOSE 8080
 
 CMD ["./bookreader"]
