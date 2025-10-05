@@ -32,6 +32,6 @@ type ReadingProgress struct {
 	BookID      int   `json:"book_id" gorm:"not null"`
 	CurrentPage int   `json:"current_page" gorm:"default:1"`
 	LastReadAt  int64 `json:"last_read_at"`
-	User        User  `gorm:"foreignKey:UserID" json:"user"`
-	Book        Book  `gorm:"foreignKey:BookID" json:"book"`
+	User        User  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user"`
+	Book        Book  `gorm:"foreignKey:BookID;constraint:OnDelete:CASCADE" json:"book"`
 }

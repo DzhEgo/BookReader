@@ -1,4 +1,4 @@
-const API_BASE = window.location.origin;
+const API_BASE = window.location.origin + '/api/v1';
 const API = {
     BOOK_LIST: `${API_BASE}/book/list`,
     BOOK_READ: `${API_BASE}/book/read`,
@@ -685,7 +685,7 @@ function renderUsers() {
                 if (!token) throw new Error('Необходима авторизация');
 
                 const response = await fetch(API.ADD_ROLE, {
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'

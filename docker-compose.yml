@@ -28,8 +28,6 @@ services:
   app:
     build: .
     container_name: bookreader_app
-    ports:
-      - "8080:8080"
     environment:
       - DB_CONN=${DB_CONN}
       - DB_PASS=${DB_PASS}
