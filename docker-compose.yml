@@ -38,6 +38,7 @@ services:
       - ADMIN_PASS=${ADMIN_PASS}
     volumes:
       - ./.env:/app/.env
+      - app_data:/var/tmp/
     depends_on:
       - postgres
     networks:
@@ -50,3 +51,4 @@ networks:
 
 volumes:
   postgres_data:
+  app_data:

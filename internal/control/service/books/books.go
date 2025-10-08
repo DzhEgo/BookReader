@@ -245,12 +245,12 @@ func (b *bookService) DeleteBook(id int, user *model.UserContext) (err error) {
 		return fmt.Errorf("failed to delete book: %v", err)
 	}
 
+	b.cache.Delete(key)
+	b.cache.Delete("allBooks")
+
 	if err := os.Remove(book.Filepath); err != nil {
 		return fmt.Errorf("failed to delete book: %v", err)
 	}
-
-	b.cache.Delete(key)
-	b.cache.Delete("allBooks")
 
 	return nil
 }
