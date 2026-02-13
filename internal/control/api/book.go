@@ -206,14 +206,7 @@ func (ah *ApiHandler) getBookPage(ctx *fiber.Ctx) error {
 		return utils.Response(ctx, fiber.StatusForbidden, wrapErr.Error())
 	}
 
-	book, err := ah.srv.Books.GetBook(idInt)
-	if err != nil {
-		log.Errorf("failed to get book: %v", err)
-		wrapErr := fmt.Errorf("failed to get book: %v", err)
-		return utils.Response(ctx, fiber.StatusInternalServerError, wrapErr.Error())
-	}
-
-	bookPage, err := ah.srv.Reader.GetBookPage(book.Filepath, uint(pageInt))
+	bookPage, err := ah.srv.Books.GetBookPage(idInt, uint(pageInt))
 	if err != nil {
 		log.Errorf("failed to get book page: %v", err)
 		wrapErr := fmt.Errorf("failed to get book page: %v", err)

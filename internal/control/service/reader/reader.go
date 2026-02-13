@@ -112,32 +112,6 @@ func (s *ReaderService) GetBookInfo(path string) (*model.BookInfo, error) {
 	return info, nil
 }
 
-func (s *ReaderService) GetBookPage(path string, pageNum uint) (string, error) {
-	key := fmt.Sprintf("%s:%d", path, pageNum)
-	if val, ok := s.cache.Get(key); ok {
-		return val.(string), nil
-	}
-
-	adapter, err := s.getAdapter(path)
-	if err != nil {
-		return "", err
-	}
-
-	data, err := s.Parse(path)
-	if err != nil {
-		return "", err
-	}
-
-	page, err := adapter.GetBookPage(data, pageNum)
-	if err != nil {
-		return "", err
-	}
-
-	s.cache.Set(key, page)
-
-	return page, nil
-}
-
 func CountPages(runes []rune) uint {
 	if len(runes) == 0 {
 		return 0

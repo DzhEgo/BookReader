@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
 )
 
 type BookService interface {
@@ -27,6 +28,7 @@ type BookService interface {
 	DeleteBook(id int, user *model.UserContext) error
 	SaveProgress(command *model.SaveProgress) error
 	GetProgress(userId, bookId int) (*dbmodel.ReadingProgress, error)
+	GetBookPage(id int, pageNum uint) (string, error)
 }
 type Option func(*bookService)
 
@@ -219,6 +221,70 @@ func (b *bookService) GetBooks() ([]*dbmodel.Book, error) {
 	b.cache.Set(key, books)
 
 	return books, nil
+}
+
+func (b *bookService) GetBookPage(id int, pageNum uint) (string, error) {
+	book, err := b.GetBook(id)
+	if err != nil {
+		return "", fmt.Errorf("failed to get book: %v", err)
+	}
+
+	key := fmt.Sprintf("%s:%d", book.Filepath, pageNum)
+	if val, ok := b.cache.Get(key); ok {
+		return val.(string), nil
+	}
+
+	data, err := b.reader.Parse(book.Filepath)
+	if err != nil {
+		return "", err
+	}
+
+	page, err := b.getBookPage(data, pageNum)
+	if err != nil {
+		return "", err
+	}
+
+	b.cache.Set(key, page)
+
+	return page, nil
+}
+
+func (b *bookService) getBookPage(data string, pageNum uint) (string, error) {
+	runes := []rune(data)
+	length := uint(len(runes))
+	var start uint
+	var end uint
+
+	if length == 0 {
+		return "", nil
+	}
+
+	for i := uint(1); i < pageNum; i++ {
+		tmpEnd := start + reader.PageSize
+		if tmpEnd >= length {
+			tmpEnd = length
+		} else {
+			for tmpEnd < length && !unicode.IsSpace(runes[tmpEnd]) {
+				tmpEnd++
+			}
+		}
+		start = tmpEnd
+	}
+
+	end = start + reader.PageSize
+	if end >= length {
+		end = length
+	} else {
+		for end < length && !unicode.IsSpace(runes[end]) {
+			end++
+		}
+	}
+
+	if start >= length {
+		return "", fmt.Errorf("start out of bounds")
+	}
+
+	return strings.TrimSpace(string(runes[start:end])), nil
 }
 
 func (b *bookService) DeleteBook(id int, user *model.UserContext) (err error) {
